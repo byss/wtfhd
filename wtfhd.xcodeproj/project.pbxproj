@@ -44,6 +44,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		436A169724CC377D00FFACE2 /* fs_tree */ = {
+			isa = PBXGroup;
+			children = (
+				43CB6CD124C96AD0005C4799 /* children_policy.hxx */,
+				43CB6CD224C96AD0005C4799 /* children_policy.cxx */,
+				43EF744024C43F5B00F5276D /* node_info.hxx */,
+				43CB6CCF24C942FE005C4799 /* node_info.cxx */,
+			);
+			path = fs_tree;
+			sourceTree = "<group>";
+		};
 		43EF742724C43E7900F5276D = {
 			isa = PBXGroup;
 			children = (
@@ -63,10 +74,7 @@
 		43EF743224C43E7900F5276D /* wtfhd */ = {
 			isa = PBXGroup;
 			children = (
-				43EF744024C43F5B00F5276D /* node_info.hxx */,
-				43CB6CCF24C942FE005C4799 /* node_info.cxx */,
-				43CB6CD124C96AD0005C4799 /* children_policy.hxx */,
-				43CB6CD224C96AD0005C4799 /* children_policy.cxx */,
+				436A169724CC377D00FFACE2 /* fs_tree */,
 				43EF743324C43E7900F5276D /* main.cpp */,
 			);
 			path = wtfhd;
@@ -259,9 +267,8 @@
 		43EF743824C43E7900F5276D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = BA9979F6M6;
-				ENABLE_HARDENED_RUNTIME = YES;
+				CODE_SIGN_STYLE = Manual;
+				PRODUCT_BUNDLE_IDENTIFIER = ru.byss.wtfhd;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -269,9 +276,8 @@
 		43EF743924C43E7900F5276D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = BA9979F6M6;
-				ENABLE_HARDENED_RUNTIME = YES;
+				CODE_SIGN_STYLE = Manual;
+				PRODUCT_BUNDLE_IDENTIFIER = ru.byss.wtfhd;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
