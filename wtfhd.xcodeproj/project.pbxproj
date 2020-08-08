@@ -7,9 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4369BF0224D3455C00B55665 /* window.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 4369BF0124D3455C00B55665 /* window.cxx */; };
 		43CB6CD024C942FE005C4799 /* node_info.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 43CB6CCF24C942FE005C4799 /* node_info.cxx */; };
 		43CB6CD324C96AD0005C4799 /* children_policy.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 43CB6CD224C96AD0005C4799 /* children_policy.cxx */; };
-		43EF743424C43E7900F5276D /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43EF743324C43E7900F5276D /* main.cpp */; };
+		43CD76C124D3804B00E25A90 /* libpanel.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 43CD76C024D3804B00E25A90 /* libpanel.tbd */; };
+		43CD76C324D3805200E25A90 /* libncurses.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 43CD76C224D3805200E25A90 /* libncurses.tbd */; };
+		43CD76C624D3BE2500E25A90 /* ui_common.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 43CD76C524D3BE2500E25A90 /* ui_common.cxx */; };
+		43CD76C924D3C0EF00E25A90 /* main_window.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 43CD76C824D3C0EF00E25A90 /* main_window.cxx */; };
+		43CD76CC24D3C7F400E25A90 /* screen.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 43CD76CB24D3C7F400E25A90 /* screen.cxx */; };
+		43CD76CF24D3EBB900E25A90 /* run_loop.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 43CD76CD24D3EBB900E25A90 /* run_loop.cxx */; };
+		43CD76D224D3ECF700E25A90 /* event_source.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 43CD76D124D3ECF700E25A90 /* event_source.cxx */; };
+		43EF743424C43E7900F5276D /* main.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 43EF743324C43E7900F5276D /* main.cxx */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,11 +33,26 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4369BF0024D3455C00B55665 /* window.hxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = window.hxx; sourceTree = "<group>"; };
+		4369BF0124D3455C00B55665 /* window.cxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = window.cxx; sourceTree = "<group>"; };
+		4369BF0424D3477E00B55665 /* libncurses.5.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libncurses.5.tbd; path = usr/lib/libncurses.5.tbd; sourceTree = SDKROOT; };
 		43CB6CCF24C942FE005C4799 /* node_info.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = node_info.cxx; sourceTree = "<group>"; };
 		43CB6CD124C96AD0005C4799 /* children_policy.hxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = children_policy.hxx; sourceTree = "<group>"; };
 		43CB6CD224C96AD0005C4799 /* children_policy.cxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = children_policy.cxx; sourceTree = "<group>"; };
+		43CD76C024D3804B00E25A90 /* libpanel.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libpanel.tbd; path = usr/lib/libpanel.tbd; sourceTree = SDKROOT; };
+		43CD76C224D3805200E25A90 /* libncurses.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libncurses.tbd; path = usr/lib/libncurses.tbd; sourceTree = SDKROOT; };
+		43CD76C424D3BE2500E25A90 /* ui_common.hxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ui_common.hxx; sourceTree = "<group>"; };
+		43CD76C524D3BE2500E25A90 /* ui_common.cxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ui_common.cxx; sourceTree = "<group>"; };
+		43CD76C724D3C0EF00E25A90 /* main_window.hxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = main_window.hxx; sourceTree = "<group>"; };
+		43CD76C824D3C0EF00E25A90 /* main_window.cxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main_window.cxx; sourceTree = "<group>"; };
+		43CD76CA24D3C7F400E25A90 /* screen.hxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = screen.hxx; sourceTree = "<group>"; };
+		43CD76CB24D3C7F400E25A90 /* screen.cxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = screen.cxx; sourceTree = "<group>"; };
+		43CD76CD24D3EBB900E25A90 /* run_loop.cxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = run_loop.cxx; sourceTree = "<group>"; };
+		43CD76CE24D3EBB900E25A90 /* run_loop.hxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = run_loop.hxx; sourceTree = "<group>"; };
+		43CD76D024D3ECF700E25A90 /* event_source.hxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = event_source.hxx; sourceTree = "<group>"; };
+		43CD76D124D3ECF700E25A90 /* event_source.cxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = event_source.cxx; sourceTree = "<group>"; };
 		43EF743024C43E7900F5276D /* wtfhd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = wtfhd; sourceTree = BUILT_PRODUCTS_DIR; };
-		43EF743324C43E7900F5276D /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		43EF743324C43E7900F5276D /* main.cxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cxx; sourceTree = "<group>"; };
 		43EF744024C43F5B00F5276D /* node_info.hxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = node_info.hxx; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -38,12 +61,43 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				43CD76C324D3805200E25A90 /* libncurses.tbd in Frameworks */,
+				43CD76C124D3804B00E25A90 /* libpanel.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4369BEFF24D3451900B55665 /* ui */ = {
+			isa = PBXGroup;
+			children = (
+				43CD76C424D3BE2500E25A90 /* ui_common.hxx */,
+				43CD76C524D3BE2500E25A90 /* ui_common.cxx */,
+				43CD76D024D3ECF700E25A90 /* event_source.hxx */,
+				43CD76D124D3ECF700E25A90 /* event_source.cxx */,
+				43CD76CE24D3EBB900E25A90 /* run_loop.hxx */,
+				43CD76CD24D3EBB900E25A90 /* run_loop.cxx */,
+				43CD76CA24D3C7F400E25A90 /* screen.hxx */,
+				43CD76CB24D3C7F400E25A90 /* screen.cxx */,
+				4369BF0024D3455C00B55665 /* window.hxx */,
+				4369BF0124D3455C00B55665 /* window.cxx */,
+				43CD76C724D3C0EF00E25A90 /* main_window.hxx */,
+				43CD76C824D3C0EF00E25A90 /* main_window.cxx */,
+			);
+			path = ui;
+			sourceTree = "<group>";
+		};
+		4369BF0324D3477E00B55665 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				43CD76C224D3805200E25A90 /* libncurses.tbd */,
+				43CD76C024D3804B00E25A90 /* libpanel.tbd */,
+				4369BF0424D3477E00B55665 /* libncurses.5.tbd */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		436A169724CC377D00FFACE2 /* fs_tree */ = {
 			isa = PBXGroup;
 			children = (
@@ -60,6 +114,7 @@
 			children = (
 				43EF743224C43E7900F5276D /* wtfhd */,
 				43EF743124C43E7900F5276D /* Products */,
+				4369BF0324D3477E00B55665 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -75,7 +130,8 @@
 			isa = PBXGroup;
 			children = (
 				436A169724CC377D00FFACE2 /* fs_tree */,
-				43EF743324C43E7900F5276D /* main.cpp */,
+				4369BEFF24D3451900B55665 /* ui */,
+				43EF743324C43E7900F5276D /* main.cxx */,
 			);
 			path = wtfhd;
 			sourceTree = "<group>";
@@ -136,9 +192,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43EF743424C43E7900F5276D /* main.cpp in Sources */,
+				43CD76CC24D3C7F400E25A90 /* screen.cxx in Sources */,
+				43EF743424C43E7900F5276D /* main.cxx in Sources */,
 				43CB6CD324C96AD0005C4799 /* children_policy.cxx in Sources */,
+				43CD76CF24D3EBB900E25A90 /* run_loop.cxx in Sources */,
+				43CD76C924D3C0EF00E25A90 /* main_window.cxx in Sources */,
+				4369BF0224D3455C00B55665 /* window.cxx in Sources */,
 				43CB6CD024C942FE005C4799 /* node_info.cxx in Sources */,
+				43CD76C624D3BE2500E25A90 /* ui_common.cxx in Sources */,
+				43CD76D224D3ECF700E25A90 /* event_source.cxx in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -196,7 +258,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.16;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -253,7 +314,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.16;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_CPLUSPLUSFLAGS = (

@@ -53,8 +53,9 @@ bool children_policy::impl::is_path_allowed (path const &child) const {
 }
 
 void children_policy::impl::add_root (path root) {
-	if (!this->is_path_allowed (root)) {
-		this->_roots.insert (root);
+	auto canonical_root = canonical (root);
+	if (!this->is_path_allowed (canonical_root)) {
+		this->_roots.insert (canonical_root);
 	}
 }
 

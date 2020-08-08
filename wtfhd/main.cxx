@@ -1,22 +1,33 @@
 //
-//  main.cpp
+//  main.cxx
 //  wtfhd
 //
 //  Created by Kirill Bystrov on 7/19/20.
 //
 
+#include <sstream>
 #include <iostream>
+#include <typeinfo>
 
 #include "node_info.hxx"
 #include "children_policy.hxx"
 
+#include "main_window.hxx"
+
 using namespace fs;
+using namespace ui;
 using namespace std;
 
 template <typename _Tp>
 struct size_info {
 	static char const *const type_name;
 	static auto constexpr type_size = sizeof (_Tp);
+	
+	string str () const {
+		ostringstream stream;
+		stream << *this;
+		return stream.str ();
+	}
 };
 
 template <typename _Tp>
@@ -29,10 +40,9 @@ ostream &operator << (ostream &stream, size_info <_Tp> info) {
 }
 
 int main (int argc, const char *argv []) {
-	cout << size_info <node_info> () << endl;
-	cout << size_info <file_info> () << endl;
-	cout << size_info <dir_info> () << endl;
-	cout << size_info <link_info> () << endl;
+	auto screen = ui::screen::shared ();
+	screen->make_root <ui::main_window> ();
+	return ui::main (argc, argv);
 
 	try {
 		vector <filesystem::path> roots (argv + 1, argv + argc);
