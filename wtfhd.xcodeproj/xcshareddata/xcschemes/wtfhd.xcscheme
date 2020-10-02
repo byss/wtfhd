@@ -54,7 +54,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "/Users/byss/Library"
+            argument = "/Users/byss/Downloads"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

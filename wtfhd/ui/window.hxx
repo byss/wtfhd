@@ -58,57 +58,75 @@ protected:
 	virtual void println (std::string const &) const noexcept;
 	void refresh () const;
 
+	virtual void window_did_load (void) {}
 	virtual void window_will_appear (void) {}
 	virtual void window_did_appear (void) {}
 	virtual void window_will_disappear (void) {}
 	virtual void window_did_disappear (void) {}
 	
-	void add_timer (timer &t);
 	void add_mouse_button_handler (long button, mouse::handler_cref handler);
 	void add_key_handler (int key, keyboard::handler_cref handler);
 	void remove_timer (timer &t);
 	void remove_mouse_handler (long button, mouse::handler_cref handler);
 	void remove_key_handler (int key, keyboard::handler_cref handler);
+
+protected:
+	template <typename _Window, typename ..._Args>
+	_Window &push (_Args ...args) {
+		return this->screen ().push <_Window> (std::forward <_Args> (args)...);
+	}
+	
+	void pop () {
+		return this->screen ().pop ();
+	}
+	
+	void add_timer (timer &timer) {
+		this->add_timer_impl (timer);
+	}
+	
+	timer &add_timer (timer::duration interval, timer::handler_cref handler) {
+		return this->add_timer_impl (interval, handler);
+	}
+	
+	timer &add_timer (timer::time_point deadline, timer::handler_cref handler) {
+		return this->add_timer_impl (deadline, handler);
+	}
+	
+	timer &add_timer (timer::time_point deadline, timer::duration interval, timer::handler_cref handler) {
+		return this->add_timer_impl (deadline, interval, handler);
+	}
+	
+	template <typename _Fp, typename ..._Args>
+	void invoke_callback (_Fp const &f, _Args &&...args) {
+		if (this->get_run_loop ().is_main_thread ()) {
+			return std::invoke (f, std::forward <_Args> (args)...);
+		}
+		
+		auto callback = std::bind (f, std::forward <_Args> (args)...);
+		this->add_timer (timer::duration::zero (), [callback, this] (auto timer) {
+			std::invoke (callback);
+			this->remove_timer (timer);
+		});
+	}
 		
 private:
 	using screen::window::screen, screen::window::current_stack, screen::window::get_run_loop, screen::window::stack_pos;
 	
-	virtual void activate () override final {
-		this->window_will_appear ();
-		for (auto source: this->_sources) {
-			this->get_run_loop ().add_event_source (source);
-		}
-		this->window_did_appear ();
-	}
-	
-	virtual void deactivate () override final {
-		this->window_will_disappear ();
-		for (auto source: this->_sources) {
-			this->get_run_loop ().remove_event_source (source);
-		}
-		this->window_did_disappear ();
-	}
-	
-	void add_run_loop_event_source (std::shared_ptr <event_source> source) noexcept {
-		auto [it, success] = this->_sources.emplace (source);
-		if (!success) {
-			return;
-		}
-		if (this->is_top ()) {
-			this->get_run_loop ().add_event_source (*it);
-		}
-	}
-	
-	void remove_run_loop_event_source (std::shared_ptr <event_source> source) noexcept {
-		auto it = this->_sources.find (source);
-		if (it != this->_sources.end ()) {
-			this->_sources.erase (it);
-			this->get_run_loop ().remove_event_source (source);
-		}		
-	}
-	
+	virtual void load () override final;
+	virtual void activate () override final;
+	virtual void deactivate () override final;
+
+	void add_run_loop_event_source (std::shared_ptr <event_source> source) noexcept;
+	void remove_run_loop_event_source (std::shared_ptr <event_source> source) noexcept;
 	std::function <void (std::function <void (WINDOW *)> const &)> with_window_impl_from_this () const noexcept;
-	
+
+	template <typename ..._Args>
+	timer &add_timer_impl (_Args &&...args) {
+		auto result = std::make_shared <timer> (std::forward <_Args> (args)...);
+		this->add_run_loop_event_source (result);
+		return *result;
+	}
+		
 	void with_window_impl (std::function <void (WINDOW *)> const &action) const noexcept {
 		std::invoke (action, this->impl ());
 	}

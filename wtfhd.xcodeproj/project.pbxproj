@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		4369BF0224D3455C00B55665 /* window.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 4369BF0124D3455C00B55665 /* window.cxx */; };
+		43B724DD24DEB1CB009A1A38 /* tree_builder.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 43B724DB24DEB1CB009A1A38 /* tree_builder.cxx */; };
+		43B724E024DEB446009A1A38 /* progress_window.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 43B724DF24DEB446009A1A38 /* progress_window.cxx */; };
+		43B724E424DEB9D9009A1A38 /* integral_set.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 43B724E324DEB9D9009A1A38 /* integral_set.cxx */; };
 		43CB6CD024C942FE005C4799 /* node_info.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 43CB6CCF24C942FE005C4799 /* node_info.cxx */; };
 		43CB6CD324C96AD0005C4799 /* children_policy.cxx in Sources */ = {isa = PBXBuildFile; fileRef = 43CB6CD224C96AD0005C4799 /* children_policy.cxx */; };
 		43CD76C124D3804B00E25A90 /* libpanel.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 43CD76C024D3804B00E25A90 /* libpanel.tbd */; };
@@ -33,9 +36,21 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		434E13BE2521222A0014256C /* libc++.1.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.1.tbd"; path = "usr/lib/libc++.1.tbd"; sourceTree = SDKROOT; };
+		434E13C2252122370014256C /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		434E13C3252122370014256C /* libc++abi.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++abi.tbd"; path = "usr/lib/libc++abi.tbd"; sourceTree = SDKROOT; };
+		43509194251E283600D324CA /* cxx_argpacks.hxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = cxx_argpacks.hxx; sourceTree = "<group>"; };
+		43509197251E85AC00D324CA /* misc_types.hxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = misc_types.hxx; sourceTree = "<group>"; };
 		4369BF0024D3455C00B55665 /* window.hxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = window.hxx; sourceTree = "<group>"; };
 		4369BF0124D3455C00B55665 /* window.cxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = window.cxx; sourceTree = "<group>"; };
 		4369BF0424D3477E00B55665 /* libncurses.5.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libncurses.5.tbd; path = usr/lib/libncurses.5.tbd; sourceTree = SDKROOT; };
+		43B724DB24DEB1CB009A1A38 /* tree_builder.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tree_builder.cxx; sourceTree = "<group>"; };
+		43B724DC24DEB1CB009A1A38 /* tree_builder.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = tree_builder.hxx; sourceTree = "<group>"; };
+		43B724DE24DEB446009A1A38 /* progress_window.hxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = progress_window.hxx; sourceTree = "<group>"; };
+		43B724DF24DEB446009A1A38 /* progress_window.cxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = progress_window.cxx; sourceTree = "<group>"; };
+		43B724E224DEB9D9009A1A38 /* integral_set.hxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = integral_set.hxx; sourceTree = "<group>"; };
+		43B724E324DEB9D9009A1A38 /* integral_set.cxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = integral_set.cxx; sourceTree = "<group>"; };
+		43B724E524DEC2BF009A1A38 /* impl_namespace.hxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = impl_namespace.hxx; sourceTree = "<group>"; };
 		43CB6CCF24C942FE005C4799 /* node_info.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = node_info.cxx; sourceTree = "<group>"; };
 		43CB6CD124C96AD0005C4799 /* children_policy.hxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = children_policy.hxx; sourceTree = "<group>"; };
 		43CB6CD224C96AD0005C4799 /* children_policy.cxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = children_policy.cxx; sourceTree = "<group>"; };
@@ -74,16 +89,18 @@
 			children = (
 				43CD76C424D3BE2500E25A90 /* ui_common.hxx */,
 				43CD76C524D3BE2500E25A90 /* ui_common.cxx */,
-				43CD76D024D3ECF700E25A90 /* event_source.hxx */,
-				43CD76D124D3ECF700E25A90 /* event_source.cxx */,
 				43CD76CE24D3EBB900E25A90 /* run_loop.hxx */,
 				43CD76CD24D3EBB900E25A90 /* run_loop.cxx */,
+				43CD76D024D3ECF700E25A90 /* event_source.hxx */,
+				43CD76D124D3ECF700E25A90 /* event_source.cxx */,
 				43CD76CA24D3C7F400E25A90 /* screen.hxx */,
 				43CD76CB24D3C7F400E25A90 /* screen.cxx */,
 				4369BF0024D3455C00B55665 /* window.hxx */,
 				4369BF0124D3455C00B55665 /* window.cxx */,
 				43CD76C724D3C0EF00E25A90 /* main_window.hxx */,
 				43CD76C824D3C0EF00E25A90 /* main_window.cxx */,
+				43B724DE24DEB446009A1A38 /* progress_window.hxx */,
+				43B724DF24DEB446009A1A38 /* progress_window.cxx */,
 			);
 			path = ui;
 			sourceTree = "<group>";
@@ -91,6 +108,9 @@
 		4369BF0324D3477E00B55665 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				434E13C2252122370014256C /* libc++.tbd */,
+				434E13C3252122370014256C /* libc++abi.tbd */,
+				434E13BE2521222A0014256C /* libc++.1.tbd */,
 				43CD76C224D3805200E25A90 /* libncurses.tbd */,
 				43CD76C024D3804B00E25A90 /* libpanel.tbd */,
 				4369BF0424D3477E00B55665 /* libncurses.5.tbd */,
@@ -105,8 +125,22 @@
 				43CB6CD224C96AD0005C4799 /* children_policy.cxx */,
 				43EF744024C43F5B00F5276D /* node_info.hxx */,
 				43CB6CCF24C942FE005C4799 /* node_info.cxx */,
+				43B724DC24DEB1CB009A1A38 /* tree_builder.hxx */,
+				43B724DB24DEB1CB009A1A38 /* tree_builder.cxx */,
 			);
 			path = fs_tree;
+			sourceTree = "<group>";
+		};
+		43B724E124DEB9C3009A1A38 /* util */ = {
+			isa = PBXGroup;
+			children = (
+				43509197251E85AC00D324CA /* misc_types.hxx */,
+				43B724E524DEC2BF009A1A38 /* impl_namespace.hxx */,
+				43509194251E283600D324CA /* cxx_argpacks.hxx */,
+				43B724E224DEB9D9009A1A38 /* integral_set.hxx */,
+				43B724E324DEB9D9009A1A38 /* integral_set.cxx */,
+			);
+			path = util;
 			sourceTree = "<group>";
 		};
 		43EF742724C43E7900F5276D = {
@@ -129,6 +163,7 @@
 		43EF743224C43E7900F5276D /* wtfhd */ = {
 			isa = PBXGroup;
 			children = (
+				43B724E124DEB9C3009A1A38 /* util */,
 				436A169724CC377D00FFACE2 /* fs_tree */,
 				4369BEFF24D3451900B55665 /* ui */,
 				43EF743324C43E7900F5276D /* main.cxx */,
@@ -146,6 +181,7 @@
 				43EF742C24C43E7900F5276D /* Sources */,
 				43EF742D24C43E7900F5276D /* Frameworks */,
 				43EF742E24C43E7900F5276D /* CopyFiles */,
+				432C19682527A029008564BC /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -187,19 +223,42 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		432C19682527A029008564BC /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		43EF742C24C43E7900F5276D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				43CD76CC24D3C7F400E25A90 /* screen.cxx in Sources */,
+				43B724DD24DEB1CB009A1A38 /* tree_builder.cxx in Sources */,
 				43EF743424C43E7900F5276D /* main.cxx in Sources */,
 				43CB6CD324C96AD0005C4799 /* children_policy.cxx in Sources */,
 				43CD76CF24D3EBB900E25A90 /* run_loop.cxx in Sources */,
 				43CD76C924D3C0EF00E25A90 /* main_window.cxx in Sources */,
+				43B724E024DEB446009A1A38 /* progress_window.cxx in Sources */,
 				4369BF0224D3455C00B55665 /* window.cxx in Sources */,
 				43CB6CD024C942FE005C4799 /* node_info.cxx in Sources */,
 				43CD76C624D3BE2500E25A90 /* ui_common.cxx in Sources */,
+				43B724E424DEB9D9009A1A38 /* integral_set.cxx in Sources */,
 				43CD76D224D3ECF700E25A90 /* event_source.cxx in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -241,6 +300,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu18;
@@ -303,6 +363,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu18;

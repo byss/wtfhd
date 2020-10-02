@@ -10,16 +10,23 @@
 
 #include "window.hxx"
 
+namespace fs {
+	class children_policy;
+	class tree_builder;
+}
+
 namespace ui {
 	class main_window;
 }
 
 class ui::main_window: public ui::window {
 public:
-	main_window (): window () {
-	}
+	main_window (std::unique_ptr <fs::children_policy const> &&policy);
 	
-	virtual ~main_window () = default;
+private:
+	void window_did_appear () override;
+	
+	std::shared_ptr <fs::tree_builder> _builder;
 };
 
 #endif /* main_window_hxx */

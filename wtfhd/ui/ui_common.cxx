@@ -9,9 +9,8 @@
 
 #include "screen.hxx"
 
-int ui::main (int argc, const char **argv) {
+int ui::main () {
 	return screen::run_main ();
-	
 }
 
 void ui::exit (int rc) {

@@ -25,14 +25,12 @@ bool run_loop::compare_source_ptr::operator () (weak_ptr <event_source> const &l
 		return true;
 	}
 	auto const &lhs = lhs_ptr.lock (), &rhs = rhs_ptr.lock ();
-	auto const priority_order = lhs->priority_value () <=> rhs->priority_value ();
-	if (priority_order != 0) {
-		return priority_order < 0;
-	}
-	return lhs.owner_before (rhs);
+	return lhs->compare (rhs.get ());
 }
 
 int run_loop::run () {
+	this->_main_thread_id = this_thread::get_id ();
+	
 	this->_exit_mutex.lock ();
 	for (;;) {
 		auto const now = clock_type::now ();

@@ -8,6 +8,7 @@
 #ifndef node_info_hxx
 #define node_info_hxx
 
+#include <tuple>
 #include <chrono>
 #include <vector>
 #include <utility>
@@ -25,10 +26,29 @@ namespace fs {
 
 class fs::node_info {
 public:
+	struct id {
+		typedef std::tuple <::dev_t, ::ino_t> tuple_type;
+		
+		::dev_t const device;
+		::ino_t const inode;
+		
+		id (::dev_t device, ::ino_t inode): device (device), inode (inode) {}
+		id (tuple_type value): id (value, std::make_index_sequence <std::tuple_size_v <tuple_type>> ()) {}
+		~id () = default;
+		
+		tuple_type constexpr as_tuple () const {
+			return { this->device, this->inode };
+		}
+		
+	private:
+		template <std::size_t ..._Idx>
+		id (tuple_type value, std::index_sequence <_Idx...> indices): id (std::get <_Idx> (value)...) {}
+	};
+	
 	static std::unique_ptr <node_info> make (std::filesystem::path &&, children_policy &);
 
-	std::pair <::ino_t, ::dev_t> identifier () const {
-		return { this->_inode, this->_dev };
+	id identifier () const {
+		return { this->_dev, this->_inode };
 	}
 
 	auto mtime () const {
@@ -76,14 +96,6 @@ private:
 	::time_t _mtime_sec;
 	::uint32_t _mtime_nsec;
 	::dev_t _dev;
-};
-
-template <>
-struct std::hash <fs::node_info> {
-	std::size_t operator () (fs::node_info const &value) const {
-		auto const value_id = value.identifier ();
-		return std::__hash_combine (std::hash <decltype (value_id.first)> () (value_id.first), std::hash <decltype (value_id.second)> () (value_id.second));
-	}
 };
 
 class fs::file_info: public node_info {

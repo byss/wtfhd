@@ -13,7 +13,7 @@
 namespace ui {
 	struct rect;
 	
-	int main (int argc, char const **argv);
+	int main ();
 	void exit (int);
 }
 

@@ -15,13 +15,15 @@ using namespace std;
 using namespace chrono;
 
 bool timer::has_event (time_point const &now) const {
-	return this->_deadline >= now;
+	return this->_deadline <= now;
 }
 
 void timer::process_event (time_point const &now) {
 	invoke (this->_handler, *this);
 	if (this->_interval < duration::max ()) {
 		while ((this->_deadline += this->_interval) <= now);
+	} else {
+		this->_deadline = time_point::max ();
 	}
 }
 

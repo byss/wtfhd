@@ -47,6 +47,7 @@ public:
 			return this->_stack_pos;
 		}
 		
+		virtual void load () {}
 		virtual void activate () {}
 		virtual void deactivate () {}
 
@@ -92,13 +93,14 @@ public:
 			this->_windows.back ()->deactivate ();
 			this->_windows.clear ();
 		}
-		return this->push <_Window> (args...);
+		return this->push <_Window> (std::forward <_Args> (args)...);
 	}
 	
 	template <typename _Window, typename ..._Args>
-	_Window &push (_Args &&...args) {
+	_Window &push (_Args ...args) {
 		this->_windows.empty () ? (void) nullptr : this->_windows.back ()->deactivate ();
-		auto &result = this->_windows.emplace_back (std::make_unique <_Window> (args...));
+		auto &result = this->_windows.emplace_back (std::make_unique <_Window> (std::forward <_Args> (args)...));
+		result->load ();
 		result->assign_to_screen (*this, [] (auto &stack) { return stack.size () - 1; });
 		result->activate ();
 		return static_cast <_Window &> (*result);

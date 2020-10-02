@@ -11,6 +11,7 @@
 #include <functional>
 #include <unordered_map>
 
+#include "misc_types.hxx"
 #include "run_loop.hxx"
 
 namespace ui {
@@ -18,6 +19,7 @@ namespace ui {
 	class timer;
 	class mouse;
 	class keyboard;
+	class callback;
 	class run_loop_idle;
 	class window;
 }
@@ -39,15 +41,21 @@ protected:
 	event_source (event_source const &) = default;
 	event_source (event_source &&) = delete;
 	virtual ~event_source () = default;
+	
+	virtual priority constexpr priority_class () const = 0;
+	
+	virtual bool compare (run_loop::event_source const *other) const override final {
+		if (auto const other_source = dynamic_cast <event_source const *> (other)) {
+			return this->priority_class () < other_source->priority_class ();
+		}
+		return run_loop::event_source::compare (other);
+	}
 };
 
 template <ui::event_source::priority _Priority>
 class ui::event_source::impl: public ui::event_source, public std::enable_shared_from_this <ui::event_source::impl <_Priority>> {
-	virtual std::underlying_type_t <priority> priority_value () const final {
-		return static_cast <std::underlying_type_t <priority>> (_Priority);
-	}
-	
-	priority constexpr priority_class () const {
+protected:
+	priority constexpr priority_class () const override final {
 		return _Priority;
 	}
 };
@@ -65,11 +73,13 @@ public:
 	typedef handler_type &handler_ref;
 	typedef handler_type const &handler_cref;
 
-	template <typename _Tp>
-	timer (std::chrono::time_point <_Tp> deadline): timer (deadline, std::chrono::time_point <_Tp>::duration::max) {}
-	template <typename _Tp>
-	timer (std::chrono::time_point <_Tp> deadline, typename std::chrono::time_point <_Tp>::duration interval);
-	
+	timer (duration interval): timer (clock_type::now () + interval, oneshot) {}
+	timer (time_point deadline): timer (deadline, oneshot) {}
+	timer (time_point deadline, duration interval): timer (deadline, interval, {}) {}
+	timer (duration interval, handler_cref handler): timer (clock_type::now () + interval, handler) {}
+	timer (time_point deadline, handler_cref handler): timer (deadline, oneshot, handler) {}
+	timer (time_point deadline, duration interval, handler_cref handler): impl <priority::timers> (), _deadline (deadline), _interval (interval), _handler (handler) {}
+
 	handler_cref handler () const {
 		return this->_handler;
 	}
@@ -85,6 +95,8 @@ protected:
 	virtual void process_event (time_point const &now) override;
 
 private:
+	static constexpr duration oneshot = duration::max ();
+	
 	duration const _interval;
 	time_point _deadline;
 	handler_type _handler;
@@ -184,7 +196,6 @@ protected:
 private:
 	long _buttons_mask;
 };
-
 
 class ui::keyboard: public input_device <int, event_source::priority::keyboard> {
 public:

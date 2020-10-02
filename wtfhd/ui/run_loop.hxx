@@ -13,6 +13,7 @@
 #include <memory>
 #include <vector>
 #include <chrono>
+#include <thread>
 #include <compare>
 #include <utility>
 
@@ -36,8 +37,6 @@ public:
 		typedef run_loop::duration duration;
 		typedef run_loop::period period;
 		
-		virtual int constexpr priority_value () const = 0;
-		
 		virtual ~event_source () {
 			if (this->is_active ()) {
 				this->deactivate ();
@@ -49,6 +48,10 @@ public:
 		}
 
 	protected:
+		virtual bool compare (event_source const *other) const {
+			return this < other;
+		}
+
 		virtual bool has_event (time_point const &now) const = 0;
 		virtual void process_event (time_point const &now) = 0;
 		
@@ -64,6 +67,10 @@ public:
 		
 		bool _is_active;
 	};
+	
+	bool is_main_thread () const {
+		return this->_main_thread_id == std::this_thread::get_id ();
+	}
 	
 	void add_event_source (std::weak_ptr <event_source> source) {
 		this->_pending.insert_or_assign (source, true);
@@ -90,6 +97,7 @@ private:
 	};
 	
 	int _rc;
+	std::thread::id _main_thread_id;
 	std::timed_mutex _exit_mutex;
 	std::vector <std::weak_ptr <event_source>> _sources;
 	std::map <std::weak_ptr <event_source>, bool, compare_source_ptr> _pending;

@@ -27,8 +27,6 @@ window::window (std::shared_ptr <ui::screen> const &screen, rect frame) noexcept
 	
 	PANEL *panel = new_panel (impl);
 	this->_panel = panel;
-	
-	this->refresh ();
 }
 
 window::~window () {
@@ -78,8 +76,25 @@ void window::print (string const &str, bool append_newline) const noexcept {
 	}
 }
 
-void window::add_timer (timer &t) {
-	this->add_run_loop_event_source (make_shared <timer> (t));
+void window::load () {
+	this->window_did_load ();
+}
+
+void window::activate () {
+	this->window_will_appear ();
+	for (auto source: this->_sources) {
+		this->get_run_loop ().add_event_source (source);
+	}
+	this->refresh ();
+	this->window_did_appear ();
+}
+
+void window::deactivate () {
+	this->window_will_disappear ();
+	for (auto source: this->_sources) {
+		this->get_run_loop ().remove_event_source (source);
+	}
+	this->window_did_disappear ();
 }
 
 void window::add_mouse_button_handler (long button, mouse::handler_cref handler) {
@@ -134,12 +149,31 @@ void window::remove_key_handler (int key, keyboard::handler_cref handler) {
 	}
 }
 
+void window::add_run_loop_event_source (std::shared_ptr <event_source> source) noexcept {
+	auto [it, success] = this->_sources.emplace (source);
+	if (!success) {
+		return;
+	}
+	if (this->is_top ()) {
+		this->get_run_loop ().add_event_source (*it);
+	}
+}
+
+void window::remove_run_loop_event_source (std::shared_ptr <event_source> source) noexcept {
+	auto it = this->_sources.find (source);
+	if (it != this->_sources.end ()) {
+		this->_sources.erase (it);
+		this->get_run_loop ().remove_event_source (source);
+	}
+}
+
 std::function <void (std::function <void (WINDOW *)> const &)> ui::window::with_window_impl_from_this () const noexcept {
 	return std::bind (std::mem_fn (&ui::window::with_window_impl), this, std::placeholders::_1);
 }
 
 void window::refresh () const {
 	wrefresh (this->impl ());
+	update_panels ();
 }
 
 static inline pair <string::const_iterator, string::const_iterator> find_line_break (string::const_iterator const &start, int const output_maxlen, ptrdiff_t const str_maxlen) {

@@ -17,16 +17,17 @@ using namespace fs;
 using namespace std;
 using namespace filesystem;
 
-unique_ptr <node_info> node_info::make (class path &&path, children_policy &policy) {
-	if (!policy.is_path_allowed (path)) {
+unique_ptr <node_info> node_info::make (class path &&path, fs::children_policy &policy) {
+	if (!policy.contains (path)) {
 		return nullptr;
 	}
 	
 	struct ::stat info;
 	node_info::throw_errno_if (::lstat (path.c_str (), &info));
-	if (policy.contains ({ info.st_ino, info.st_dev })) {
-		return nullptr;
-	}
+//	TODO
+//	if (policy.contains ({ info.st_ino, info.st_dev })) {
+//		return nullptr;
+//	}
 	
 	unique_ptr <node_info> result;
 	switch (info.st_mode & S_IFMT) {
@@ -39,7 +40,8 @@ unique_ptr <node_info> node_info::make (class path &&path, children_policy &poli
 	default:
 		result = make_unique <file_info> (std::move (path), info);
 	}
-	policy.add_node (result->identifier ());
+//	TODO
+//	policy.add_node (result->identifier ());
 	return result;
 }
 
@@ -51,7 +53,7 @@ node_info::node_info (class path &&path, struct ::stat const &info): _path (std:
 	this->_size = info.st_size;
 }
 
-void dir_info::load_info (children_policy &policy) {
+void dir_info::load_info (fs::children_policy &policy) {
 	DIR *const dirp = ::opendir (this->path ().c_str ());
 	this->throw_errno_if (!dirp);
 	
@@ -89,7 +91,7 @@ void dir_info::load_info (children_policy &policy) {
 	}
 }
 
-void link_info::load_info (children_policy &policy) {
+void link_info::load_info (fs::children_policy &policy) {
 	static thread_local std::array <char, PATH_MAX> target_path {};
 	ssize_t const target_path_len = ::readlink (this->path ().c_str (), target_path.data (), target_path.size ());
 	this->throw_errno_if (target_path_len == -1);
