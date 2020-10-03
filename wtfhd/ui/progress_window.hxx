@@ -16,7 +16,7 @@
 namespace ui {
 	class progress_window: public ui::window {
 	public:
-		progress_window (std::shared_ptr <fs::tree_builder> const &builder): _builder (builder) {}
+		progress_window (std::shared_ptr <fs::tree_builder> builder): _builder (builder) {}
 		~progress_window () = default;
 		
 	private:
@@ -27,7 +27,7 @@ namespace ui {
 		void builder_did_finish ();
 		void abort_builder ();
 		
-		std::shared_ptr <fs::tree_builder> const _builder;
+		std::shared_ptr <fs::tree_builder> _builder;
 	};
 }
 

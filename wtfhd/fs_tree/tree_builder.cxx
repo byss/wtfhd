@@ -18,6 +18,8 @@
 using namespace fs;
 using namespace std;
 using namespace util;
+using namespace chrono;
+using namespace chrono_literals;
 
 namespace fs::impl {
 	struct node_id_set: public util::integral_set <::dev_t, ::ino_t> {
@@ -86,15 +88,15 @@ namespace fs::impl {
 		}
 		
 		virtual bool ready () const override {
-			return this->_result.has_value ();
+			return this->_result.load (memory_order::acquire).has_value ();
 		}
 		
 		virtual bool success () const override {
-			return this->_result.value ();
+			return this->_result.load (memory_order::acquire).value ();
 		}
 		
 		virtual std::optional <bool> result () const override {
-			return this->_result;
+			return this->_result.load (memory_order::acquire);
 		}
 		
 		virtual bool contains (node_id_t const &node_id) const override;
@@ -122,6 +124,7 @@ namespace fs::impl {
 		};
 		
 		void run ();
+		bool run_iteration ();
 		
 		unique_ptr <children_policy const> const _policy;
 		callback_t _completion_callback;
@@ -129,7 +132,7 @@ namespace fs::impl {
 				
 		size_t _ready;
 		size_t _total;
-		tristate_bool _result;
+		std::atomic <tristate_bool> _result;
 
 		node_id_set _pending, _processed;
 	};
@@ -166,9 +169,23 @@ void impl::tree_builder::start (callback_t const &callback) {
 
 void impl::tree_builder::cancel () {
 	assert (!this->ready ());
-	this->_result = false;
+	this->_result.store (false, memory_order::release);
 }
 
 void impl::tree_builder::run () {
+	while (this->run_iteration ());
+}
+
+bool impl::tree_builder::run_iteration () {
+	for (auto const &callback: this->_progress_callbacks) {
+		invoke (callback);
+	}
+	if (this->_result.load (memory_order::acquire).has_value ()) {
+		invoke (this->_completion_callback);
+		return false;
+	}
 	
+	this_thread::sleep_for (500ms);
+	
+	return true;
 }

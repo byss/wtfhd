@@ -50,7 +50,6 @@
 		43B724DF24DEB446009A1A38 /* progress_window.cxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = progress_window.cxx; sourceTree = "<group>"; };
 		43B724E224DEB9D9009A1A38 /* integral_set.hxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = integral_set.hxx; sourceTree = "<group>"; };
 		43B724E324DEB9D9009A1A38 /* integral_set.cxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = integral_set.cxx; sourceTree = "<group>"; };
-		43B724E524DEC2BF009A1A38 /* impl_namespace.hxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = impl_namespace.hxx; sourceTree = "<group>"; };
 		43CB6CCF24C942FE005C4799 /* node_info.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = node_info.cxx; sourceTree = "<group>"; };
 		43CB6CD124C96AD0005C4799 /* children_policy.hxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = children_policy.hxx; sourceTree = "<group>"; };
 		43CB6CD224C96AD0005C4799 /* children_policy.cxx */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = children_policy.cxx; sourceTree = "<group>"; };
@@ -135,7 +134,6 @@
 			isa = PBXGroup;
 			children = (
 				43509197251E85AC00D324CA /* misc_types.hxx */,
-				43B724E524DEC2BF009A1A38 /* impl_namespace.hxx */,
 				43509194251E283600D324CA /* cxx_argpacks.hxx */,
 				43B724E224DEB9D9009A1A38 /* integral_set.hxx */,
 				43B724E324DEB9D9009A1A38 /* integral_set.cxx */,

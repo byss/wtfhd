@@ -34,5 +34,4 @@ void progress_window::builder_did_finish () {
 
 void progress_window::abort_builder () {
 	this->_builder->cancel ();
-	this->pop ();
 }

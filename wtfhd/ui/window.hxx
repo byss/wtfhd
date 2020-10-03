@@ -23,7 +23,7 @@ namespace ui {
 typedef struct panel PANEL;
 
 class ui::window: public ui::screen::window {
-	template <typename _Subevent, ui::event_source::priority _Priority, typename ..._Args>
+	template <typename _Impl, typename _Subevent, typename ..._Args>
 	friend class ::input_device;
 public:
 	static std::shared_ptr <window> root ();
@@ -66,7 +66,8 @@ protected:
 	
 	void add_mouse_button_handler (long button, mouse::handler_cref handler);
 	void add_key_handler (int key, keyboard::handler_cref handler);
-	void remove_timer (timer &t);
+	void remove_timer (std::weak_ptr <timer> t);
+	void remove_timer (std::shared_ptr <timer> t);
 	void remove_mouse_handler (long button, mouse::handler_cref handler);
 	void remove_key_handler (int key, keyboard::handler_cref handler);
 
@@ -98,24 +99,24 @@ protected:
 	
 	template <typename _Fp, typename ..._Args>
 	void invoke_callback (_Fp const &f, _Args &&...args) {
-		if (this->get_run_loop ().is_main_thread ()) {
+		auto &run_loop = this->get_run_loop ();
+		if (run_loop->is_main_thread ()) {
 			return std::invoke (f, std::forward <_Args> (args)...);
+		} else {
+			run_loop->add_pending_callback_invocation (std::bind (f, std::forward <_Args> (args)...));
 		}
-		
-		auto callback = std::bind (f, std::forward <_Args> (args)...);
-		this->add_timer (timer::duration::zero (), [callback, this] (auto timer) {
-			std::invoke (callback);
-			this->remove_timer (timer);
-		});
 	}
 		
 private:
 	using screen::window::screen, screen::window::current_stack, screen::window::get_run_loop, screen::window::stack_pos;
 	
-	virtual void load () override final;
+	typedef std::unordered_set <std::shared_ptr <event_source>> sources_set;
+	
+	virtual void load (class screen &) override final;
 	virtual void activate () override final;
 	virtual void deactivate () override final;
 
+	
 	void add_run_loop_event_source (std::shared_ptr <event_source> source) noexcept;
 	void remove_run_loop_event_source (std::shared_ptr <event_source> source) noexcept;
 	std::function <void (std::function <void (WINDOW *)> const &)> with_window_impl_from_this () const noexcept;
@@ -138,10 +139,11 @@ private:
 	
 	std::weak_ptr <mouse> _mouse;
 	std::weak_ptr <keyboard> _keyboard;
-	std::unordered_set <std::shared_ptr <event_source>> _sources;
+	util::threadsafe <sources_set> _sources;
 };
 
-template <typename _Subevent, ui::event_source::priority _Priority, typename ..._Args>
-::input_device <_Subevent, _Priority, _Args...>::input_device (ui::window const &parent) noexcept: _with_window_impl (parent.with_window_impl_from_this ()) {}
+template <typename _Impl, typename _Subevent, typename ..._Args>
+::input_device <_Impl, _Subevent, _Args...>::input_device (ui::window const &parent) noexcept:
+	ui::event_source::impl <_Impl> (), _with_window_impl (parent.with_window_impl_from_this ()) {}
 
 #endif /* window_hxx */

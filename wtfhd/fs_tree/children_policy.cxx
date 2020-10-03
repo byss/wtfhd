@@ -9,7 +9,7 @@
 
 using namespace fs;
 using namespace std;
-using namespace std::filesystem;
+using namespace filesystem;
 
 template <>
 struct hash <path> {

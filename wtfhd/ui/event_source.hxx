@@ -19,7 +19,6 @@ namespace ui {
 	class timer;
 	class mouse;
 	class keyboard;
-	class callback;
 	class run_loop_idle;
 	class window;
 }
@@ -33,7 +32,7 @@ public:
 		idle = 1000,
 	};
 	
-	template <priority _Priority>
+	template <typename _Impl>
 	class impl;
 
 protected:
@@ -41,6 +40,12 @@ protected:
 	event_source (event_source const &) = default;
 	event_source (event_source &&) = delete;
 	virtual ~event_source () = default;
+	
+	using run_loop::event_source::is_active;
+	using run_loop::event_source::has_event;
+	using run_loop::event_source::next_event_interval;
+	using run_loop::event_source::activate;
+	using run_loop::event_source::deactivate;
 	
 	virtual priority constexpr priority_class () const = 0;
 	
@@ -50,13 +55,26 @@ protected:
 		}
 		return run_loop::event_source::compare (other);
 	}
+
+private:
+	template <typename _Tp>
+	struct impl_priority;
 };
 
-template <ui::event_source::priority _Priority>
-class ui::event_source::impl: public ui::event_source, public std::enable_shared_from_this <ui::event_source::impl <_Priority>> {
+template <>             struct ui::event_source::impl_priority <ui::timer>         { static constexpr priority value = priority::timers;   };
+template <>             struct ui::event_source::impl_priority <ui::mouse>         { static constexpr priority value = priority::mouse;    };
+template <>             struct ui::event_source::impl_priority <ui::keyboard>      { static constexpr priority value = priority::keyboard; };
+template <>             struct ui::event_source::impl_priority <ui::run_loop_idle> { static constexpr priority value = priority::idle;     };
+
+template <typename _Impl>
+class ui::event_source::impl: public ui::event_source, public std::enable_shared_from_this <_Impl> {
+public:
+	impl (): event_source (), std::enable_shared_from_this <_Impl> () {}
+	~impl () = default;
+	
 protected:
 	priority constexpr priority_class () const override final {
-		return _Priority;
+		return impl_priority <_Impl>::value;
 	}
 };
 
@@ -67,9 +85,9 @@ struct std::hash <ui::event_source> {
 	}
 };
 
-class ui::timer: public event_source::impl <event_source::priority::timers> {
+class ui::timer: public event_source::impl <ui::timer> {
 public:
-	typedef std::function <void (timer const &)> handler_type;
+	typedef std::function <void (std::weak_ptr <timer>)> handler_type;
 	typedef handler_type &handler_ref;
 	typedef handler_type const &handler_cref;
 
@@ -78,7 +96,7 @@ public:
 	timer (time_point deadline, duration interval): timer (deadline, interval, {}) {}
 	timer (duration interval, handler_cref handler): timer (clock_type::now () + interval, handler) {}
 	timer (time_point deadline, handler_cref handler): timer (deadline, oneshot, handler) {}
-	timer (time_point deadline, duration interval, handler_cref handler): impl <priority::timers> (), _deadline (deadline), _interval (interval), _handler (handler) {}
+	timer (time_point deadline, duration interval, handler_cref handler): impl <ui::timer> (), _deadline (deadline), _interval (interval), _handler (handler) {}
 
 	handler_cref handler () const {
 		return this->_handler;
@@ -104,8 +122,8 @@ private:
 
 typedef struct _win_st WINDOW;
 
-template <typename _Subevent, ui::event_source::priority _Priority, typename ..._Args>
-class input_device: public ui::event_source::impl <_Priority> {
+template <typename _Impl, typename _Subevent, typename ..._Args>
+class input_device: public ui::event_source::impl <_Impl> {
 public:
 	typedef _Subevent subevent_type;
 	typedef void target_type (subevent_type, _Args...);
@@ -178,7 +196,7 @@ private:
 	std::unordered_multimap <subevent_type, handler_type> _handlers;
 };
 
-class ui::mouse: public input_device <long, event_source::priority::mouse, int, int, int> {
+class ui::mouse: public input_device <ui::mouse, long, int, int, int> {
 public:
 	mouse (ui::window const &parent) noexcept: input_device (parent) {}
 	
@@ -197,7 +215,7 @@ private:
 	long _buttons_mask;
 };
 
-class ui::keyboard: public input_device <int, event_source::priority::keyboard> {
+class ui::keyboard: public input_device <ui::keyboard, int> {
 public:
 	keyboard (ui::window const &parent) noexcept: input_device (parent) {}
 
@@ -206,7 +224,7 @@ public:
 	virtual duration next_event_interval (time_point const &now) const override;
 };
 
-class ui::run_loop_idle: public event_source::impl <event_source::priority::idle> {
+class ui::run_loop_idle: public event_source::impl <ui::run_loop_idle> {
 public:
 	typedef std::function <void (void)> handler_type;
 	typedef handler_type &handler_ref;

@@ -13,13 +13,14 @@
 using namespace ui;
 using namespace std;
 using namespace chrono;
+using namespace chrono_literals;
 
 bool timer::has_event (time_point const &now) const {
 	return this->_deadline <= now;
 }
 
 void timer::process_event (time_point const &now) {
-	invoke (this->_handler, *this);
+	invoke (this->_handler, this->weak_from_this ());
 	if (this->_interval < duration::max ()) {
 		while ((this->_deadline += this->_interval) <= now);
 	} else {
@@ -120,7 +121,7 @@ void keyboard::process_event (time_point const &now) {
 }
 
 keyboard::duration keyboard::next_event_interval (const time_point &now) const {
-	return milliseconds (50);
+	return 50ms;
 }
 
 bool run_loop_idle::has_event (time_point const &now) const {

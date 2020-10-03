@@ -9,9 +9,11 @@
 #define misc_types_hxx
 
 #include <cmath>
+#include <mutex>
 #include <string>
 #include <climits>
 #include <cassert>
+#include <optional>
 #include <functional>
 
 namespace util {
@@ -79,40 +81,113 @@ namespace util {
 	public:
 		static_assert (_Sz > 1, "tristate_bool requires at least 2 bits of storage");
 		
-		tristate_bool_base (): tristate_bool_base (storage_v <false, false>) {}
+		tristate_bool_base (): _storage { false, false } {}
 		tristate_bool_base (std::nullopt_t): tristate_bool_base () {}
 		tristate_bool_base (std::nullptr_t): tristate_bool_base () {}
-		tristate_bool_base (bool value): tristate_bool_base (value ? storage_v <true, true> : storage_v <true, false>) {}
+		tristate_bool_base (bool value): _storage { true, value } {}
 		~tristate_bool_base () = default;
 		
 		bool has_value () const {
-			return this->_storage;
+			return this->_storage.ready ();
 		}
 		
 		bool value () const {
 			assert (this->has_value ());
-			return this->raw_value ();
+			return this->_storage.value ();
+		}
+		
+		bool operator* () const {
+			return this->value ();
 		}
 		
 		operator std::optional <bool> () const {
-			return this->has_value () ? std::optional (this->raw_value ()) : std::nullopt;
+			return this->has_value () ? std::optional (this->_storage.value ()) : std::nullopt;
+		}
+		
+		bool operator== (tristate_bool_base const &other) const {
+			return this->_storage == other.storage;
 		}
 		
 	private:
-		static uintmax_t constexpr ready_mask = 0b01;
-		static uintmax_t constexpr value_mask = 0b10;
+		union storage {
+		private:
+			struct bit_v {
+			public:
+				constexpr bit_v (bool const b): _value (b ? 1 : 0) {}
+				
+				uintmax_t constexpr value () const {
+					return this->_value;
+				}
+				
+			private:
+				uintmax_t _value;
+			};
+			
+		public:
+			constexpr storage (bool ready, bool value): _bits { .ready = bit_v (ready).value (), .value = bit_v (value).value () } {}
+			~storage () = default;
+			
+			bool ready () const {
+				return this->_bits.ready;
+			}
+			
+			bool value () const {
+				return this->_bits.value;
+			}
+
+			bool operator== (storage const &other) const {
+				return this->_bits == other._bits;
+			}
+			
+		private:
+			uintmax_t: _Sz;
+			
+			struct {
+				uintmax_t ready: 1;
+				uintmax_t value: 1;
+			} _bits;
+		} _storage;
+	};
+	
+	template <typename _Tp>
+	struct threadsafe {
+	public:
+		template <typename = std::enable_if_t <std::is_default_constructible_v <_Tp>>>
+		threadsafe (): threadsafe (_Tp {}) {}
 		
-		template <bool ready, bool value>
-		static uintmax_t constexpr storage_v = (ready ? ready_mask : 0x00) | (value ? value_mask : 0x00);
+		threadsafe (_Tp const &value): _value (value) {}
+		threadsafe (_Tp &&value): _value (value) {}
 		
-		explicit tristate_bool_base (uintmax_t const storage): _storage (storage) {}
-		
-		bool raw_value () const {
-			return (this->_storage & value_mask) != 0;
+		~threadsafe () {
+			std::scoped_lock lock (this->_mutex);
+			
+			if constexpr (std::is_invocable_v <decltype (&_Tp::clear), _Tp *>) {
+				this->_value.clear ();
+			} else if constexpr (std::is_default_constructible_v <_Tp> && std::is_swappable_v <_Tp>) {
+				_Tp empty {};
+				std::swap (this->_value, empty);
+			}
 		}
 		
-		uintmax_t _storage: _Sz;
+		template <typename _Fp, typename ..._Args, typename = std::enable_if_t <std::is_invocable_v <_Fp, _Tp &, _Args...>>>
+		auto with_value (_Fp const &action, _Args &&...args) {
+			std::scoped_lock lock (this->_mutex);
+			return std::invoke (action, this->_value, std::forward <_Args> (args)...);
+		}
+
+	private:
+		std::mutex _mutex;
+		_Tp _value;
 	};
+	
+	template <std::size_t _L, std::size_t _R>
+	bool operator== (tristate_bool_base <_L> const &lhs, tristate_bool_base <_R> const &rhs) {
+		if (lhs.has_value ()) {
+			return rhs.has_value () && (*lhs == *rhs);
+		} else {
+			return !rhs.has_value ();
+		}
+	}
 	
 	template <>
 	struct tristate_bool_base <sizeof (std::optional <bool>) * CHAR_BIT>: public std::optional <bool> {};

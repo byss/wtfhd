@@ -76,24 +76,29 @@ void window::print (string const &str, bool append_newline) const noexcept {
 	}
 }
 
-void window::load () {
+void window::load (class screen &screen) {
+	this->assign_to_screen (screen, [] (auto &stack) { return stack.size () - 1; });
 	this->window_did_load ();
 }
 
 void window::activate () {
 	this->window_will_appear ();
-	for (auto source: this->_sources) {
-		this->get_run_loop ().add_event_source (source);
-	}
+	this->_sources.with_value ([this] (sources_set &sources) {
+		for (auto source: sources) {
+			this->get_run_loop ()->add_event_source (source);
+		}
+	});
 	this->refresh ();
 	this->window_did_appear ();
 }
 
 void window::deactivate () {
 	this->window_will_disappear ();
-	for (auto source: this->_sources) {
-		this->get_run_loop ().remove_event_source (source);
-	}
+	this->_sources.with_value ([this] (sources_set &sources) {
+		for (auto source: sources) {
+			this->get_run_loop ()->remove_event_source (source);
+		}
+	});
 	this->window_did_disappear ();
 }
 
@@ -121,8 +126,12 @@ void window::add_key_handler (int key, keyboard::handler_cref handler) {
 	this->_keyboard.lock ()->add_handler (key, handler);
 }
 
-void window::remove_timer (timer &t) {
-	this->remove_run_loop_event_source (t.shared_from_this ());
+void window::remove_timer (weak_ptr <timer> t) {
+	this->remove_run_loop_event_source (t.lock ());
+}
+
+void window::remove_timer (shared_ptr <timer> t) {
+	this->remove_run_loop_event_source (t);
 }
 
 void window::remove_mouse_handler (long button, mouse::handler_cref handler) {
@@ -150,21 +159,26 @@ void window::remove_key_handler (int key, keyboard::handler_cref handler) {
 }
 
 void window::add_run_loop_event_source (std::shared_ptr <event_source> source) noexcept {
-	auto [it, success] = this->_sources.emplace (source);
+	auto [it, success] = this->_sources.with_value ([this, source] (sources_set &sources) {
+		return sources.emplace (source);
+	});
 	if (!success) {
 		return;
 	}
 	if (this->is_top ()) {
-		this->get_run_loop ().add_event_source (*it);
+		this->get_run_loop ()->add_event_source (*it);
 	}
 }
 
 void window::remove_run_loop_event_source (std::shared_ptr <event_source> source) noexcept {
-	auto it = this->_sources.find (source);
-	if (it != this->_sources.end ()) {
-		this->_sources.erase (it);
-		this->get_run_loop ().remove_event_source (source);
-	}
+	this->_sources.with_value ([this, source] (sources_set &sources) {
+		auto it = sources.find (source);
+		if (it != sources.end ()) {
+			sources.erase (it);
+		}
+	});
+
+	this->get_run_loop ()->remove_event_source (source);
 }
 
 std::function <void (std::function <void (WINDOW *)> const &)> ui::window::with_window_impl_from_this () const noexcept {

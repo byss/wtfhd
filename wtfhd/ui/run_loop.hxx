@@ -8,14 +8,10 @@
 #ifndef run_loop_hxx
 #define run_loop_hxx
 
-#include <map>
-#include <mutex>
-#include <memory>
-#include <vector>
 #include <chrono>
-#include <thread>
-#include <compare>
-#include <utility>
+#include <memory>
+
+#include "misc_types.hxx"
 
 namespace ui {
 	class event_source;
@@ -30,7 +26,6 @@ public:
 	typedef clock_type::period period;
 	
 	struct event_source {
-		friend class run_loop;
 	public:
 		typedef run_loop::clock_type clock_type;
 		typedef run_loop::time_point time_point;
@@ -47,7 +42,6 @@ public:
 			return this->_is_active;
 		}
 
-	protected:
 		virtual bool compare (event_source const *other) const {
 			return this < other;
 		}
@@ -65,42 +59,21 @@ public:
 			this->_is_active = false;
 		}
 		
+	private:
 		bool _is_active;
 	};
 	
-	bool is_main_thread () const {
-		return this->_main_thread_id == std::this_thread::get_id ();
-	}
+	static std::unique_ptr <run_loop> make_unique ();
+	virtual ~run_loop () = default;
 	
-	void add_event_source (std::weak_ptr <event_source> source) {
-		this->_pending.insert_or_assign (source, true);
-	}
+	virtual bool is_main_thread () const = 0;
 	
-	void remove_event_source (std::weak_ptr <event_source> source) {
-		this->_pending.insert_or_assign (source, false);
-	}
-	
-	int run (void);
-	void exit (int);
-	
-private:	
-	void next_iteration (time_point const &now);
-	void handle_emitted_events (time_point const &now);
-	void process_pending_sources ();
-	time_point idle_deadline (time_point const &now) const;
-	
-	struct compare_source_ptr {
-		compare_source_ptr () = default;
-		~compare_source_ptr () = default;
-		
-		bool operator () (std::weak_ptr <event_source> const &, std::weak_ptr <event_source> const &) const;
-	};
-	
-	int _rc;
-	std::thread::id _main_thread_id;
-	std::timed_mutex _exit_mutex;
-	std::vector <std::weak_ptr <event_source>> _sources;
-	std::map <std::weak_ptr <event_source>, bool, compare_source_ptr> _pending;
+	virtual int run (void) = 0;
+	virtual void exit (int) = 0;
+
+	virtual void add_pending_callback_invocation (util::callback_t const &) = 0;
+	virtual void add_event_source (std::weak_ptr <event_source> const &) = 0;
+	virtual void remove_event_source (std::weak_ptr <event_source> const &) = 0;
 };
 
 #endif /* run_loop_hxx */

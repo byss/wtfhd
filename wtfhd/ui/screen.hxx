@@ -22,11 +22,14 @@ namespace ui {
 class ui::screen: public std::enable_shared_from_this <ui::screen> {
 public:
 	class window {
-		friend class ui::screen;
 	public:
 		window (window &&) = default;
 		virtual ~window () = default;
 
+		virtual void load (screen &) {}
+		virtual void activate () {}
+		virtual void deactivate () {}
+		
 	protected:
 		window () {}
 		window (std::shared_ptr <ui::screen> const &screen): _screen (screen), _stack_pos (screen->_windows.size ()) {}
@@ -39,7 +42,7 @@ public:
 			return this->_screen->_windows;
 		}
 
-		run_loop &get_run_loop () const {
+		std::unique_ptr <run_loop> const &get_run_loop () const {
 			return this->_screen->_run_loop;
 		}
 	
@@ -47,18 +50,7 @@ public:
 			return this->_stack_pos;
 		}
 		
-		virtual void load () {}
-		virtual void activate () {}
-		virtual void deactivate () {}
-
-	private:
-		void assign_to_screen (ui::screen &screen, std::function <std::size_t (std::vector <std::unique_ptr <window>> &)> const &stack_actions) {
-			if (this->_screen && (this->_screen.get () != &screen)) {
-				throw std::runtime_error ("window is already assigned");
-			}
-			this->_screen = screen.shared_from_this ();
-			this->_stack_pos = std::invoke (stack_actions, this->_screen->_windows);
-		}
+		void assign_to_screen (ui::screen &screen, std::function <std::size_t (std::vector <std::unique_ptr <window>> &)> const &stack_actions);
 		
 		std::shared_ptr <ui::screen> _screen;
 		std::size_t _stack_pos;
@@ -100,10 +92,9 @@ public:
 	_Window &push (_Args ...args) {
 		this->_windows.empty () ? (void) nullptr : this->_windows.back ()->deactivate ();
 		auto &result = this->_windows.emplace_back (std::make_unique <_Window> (std::forward <_Args> (args)...));
-		result->load ();
-		result->assign_to_screen (*this, [] (auto &stack) { return stack.size () - 1; });
+		result->load (*this);
 		result->activate ();
-		return static_cast <_Window &> (*result);
+		return static_cast <_Window &> (*this->_windows.back ());
 	}
 	
 	void pop () {
@@ -116,7 +107,7 @@ protected:
 	screen ();
 	
 private:
-	run_loop _run_loop;
+	std::unique_ptr <run_loop> _run_loop;
 	std::vector <std::unique_ptr <window>> _windows;
 };
 
